@@ -4,14 +4,6 @@ import availableFunc from "../middleware/availableFunction"
 
 const updateParamService = async(data) => {
     try {
-        let changeable = await availableFunc.findParamsByName("changeable");
-        if (changeable == 0) {
-            return {
-                EM: "you can only update regulation before the term starts",
-                EC: 0,
-                DT: "",
-            }
-        }
         for (let key in data) {
             await db.params.update({
                 paramValue: `${data[key]}`,

@@ -104,15 +104,6 @@ const createNewClassService = async (classname, total, homeroomTeacher, gradeId)
       };
     }
 
-    await db.params.update({
-      paramValue: 0,
-    }, 
-    {
-      where: {
-        paramName: "changeable",
-      }
-    });
-
     let data = await db.classes.create({
       classname: classname,
       total: total,

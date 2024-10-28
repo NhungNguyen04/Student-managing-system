@@ -56,14 +56,6 @@ const findSubjectById = async(subjectId) => {
 
 const createSubject = async(name, fifteenMinFactor, fourtyFiveMinFactor, finalFactor, factor, minPassScore) => {
     try {
-        let changeable = await availableFunc.findParamsByName("changeable");
-        if (changeable == 0) {
-            return {
-                EM: "you can only create subject before the term starts",
-                EC: 1,
-                DT: "",
-            }
-        }
 
         let checkSubject = await db.subjects.findOne({
             where: {
@@ -77,6 +69,7 @@ const createSubject = async(name, fifteenMinFactor, fourtyFiveMinFactor, finalFa
                 DT: "",
             };
         }
+        console.log("Creating new subject");
         let newSubject = await db.subjects.create({
             subjectname: name,
             fifteenMinFactor: fifteenMinFactor,
@@ -104,14 +97,6 @@ const createSubject = async(name, fifteenMinFactor, fourtyFiveMinFactor, finalFa
 
 const updateSubject = async(subjectId, name, fifteenMinFactor, fourtyFiveMinFactor, finalFactor, factor, minPassScore) => {
     try {
-        let changeable = await availableFunc.findParamsByName("changeable");
-        if (changeable == 0) {
-            return {
-                EM: "you can only update subject before the term starts",
-                EC: 1,
-                DT: "",
-            }
-        }
 
         let subject = {};
         subject = await db.subjects.findOne({
@@ -163,14 +148,6 @@ const updateSubject = async(subjectId, name, fifteenMinFactor, fourtyFiveMinFact
 
 const deleteSubject = async(subjectId) => {
     try {
-        let changeable = await availableFunc.findParamsByName("changeable");
-        if (changeable == 0) {
-            return {
-                EM: "you can only delete subject before the term starts",
-                EC: 1,
-                DT: "",
-            }
-        }
         let subject = {};
         subject = await db.subjects.findOne({
             where: {
