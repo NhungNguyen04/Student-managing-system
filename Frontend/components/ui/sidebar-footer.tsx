@@ -1,5 +1,5 @@
 'use client'
-
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { LogOut, User } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
@@ -23,12 +23,61 @@ import {
 export function SidebarUserFooter() {
   const router = useRouter()
   const { logOut, userId } = useAuth()
+  const [role,setRole] = useState("");
+  useEffect( () => {
+      const fetch =async()=>
+      {
+      const RoleTake = localStorage.getItem('role') 
+      setRole(RoleTake?RoleTake:"");
+      }
+      fetch();
+    }
+  )
+  
+
+  const handleProfileClick = async() =>
+  {
+    switch (role)
+    {
+      case '1':
+        router.push('/directorprofile')  // This will navigate to (director)/dashboard
+        break
+      case '4':
+        router.push('/studentprofile')  // This will navigate to (student)/dashboard
+        break
+      case '3':
+        router.push('/officerprofile')    // This will navigate to (officer)/reports
+        break
+      case '2':
+        router.push('/teacherprofile')    // This will navigate to (teacher)/classes
+        break
+      default:
+    }
+
+
+  }
 
   const handleLogout = async () => {
     await logOut()
     router.push('/')
   }
 
+  const getimgsource = (role:string) =>
+  {
+    switch(role)
+    {
+      case '1':
+        return "images/director.png"
+      case '4':
+        return "images/student.png"  // This will navigate to (student)/dashboard
+      case '3':
+        return "images/officer.png"   // This will navigate to (officer)/reports
+      case '2':
+        return "images/teacher.png"    // This will navigate to (teacher)/classes
+      default: 
+    }
+  }
+  const imgsource = role ? getimgsource(role) : "";
   return (
     <SidebarFooter>
       <SidebarMenu>
@@ -36,8 +85,8 @@ export function SidebarUserFooter() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton className="w-full justify-start">
-                <Avatar className="h-6 w-6 mr-2">
-                  <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${userId}`} alt="User avatar" />
+                <Avatar className="h-6 w-6 mr-2 rounded-full border-[0.5px] border-[#02060bd9]">
+                  <AvatarImage src={imgsource} alt="User avatar" />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
                 <span>User Profile</span>
@@ -46,7 +95,7 @@ export function SidebarUserFooter() {
             <DropdownMenuContent align="start" className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push('/profile')}>
+              <DropdownMenuItem onClick={handleProfileClick}>
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>

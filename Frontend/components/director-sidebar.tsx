@@ -67,8 +67,8 @@ export function DirectorSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarUserFooter/>
       </SidebarContent>
+      <SidebarUserFooter/>
     </Sidebar>
   )
 }
