@@ -110,7 +110,7 @@ export default function StudentManagement() {
           return (
             <div className="flex items-center">
               <Avatar className="h-10 w-10 mr-3">
-                <AvatarImage src={student.User.image || "/student.png"} alt={student.studentname} />
+                <AvatarImage src={student.User.image || "student.png"} alt={student.studentname} />
                 <AvatarFallback>{student.studentname.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">

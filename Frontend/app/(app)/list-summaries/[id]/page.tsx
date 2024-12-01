@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import {
   flexRender,
   getCoreRowModel,
@@ -46,28 +46,33 @@ export default function Summaries() {
   const [data, setData] = useState<Summary[]>([])
   const [classname, setClassName] = useState("")
   const router = useRouter()
-  const { classId } = useParams()
+  const { id: classId } = useParams()
 
   const handlePrevious = () => {
-    router.push("/class")
+    router.push("/classes")
   }
 
   const fetchAllSummariesByClassId = async () => {
     try {
       const res = await classApi.getAllSummariesByClassId(classId as string)
-      if (res.EC === 1) {
+      console.log("Response:", res)
+      if (res.EM !== "success") {
         toast({
           variant: "destructive",
           title: "Error",
           description: res.EM,
         })
-      } else if (res.EC === 0) {
+      } else if (res.EM === "success") {
         toast({
           title: "Success",
           description: "Lấy danh sách thành công!!!",
         })
         setData(res.DT)
-        setClassName(res.DT[0].class.classname)
+        if (res.DT.length > 0) {
+          setClassName(res.DT[0].class.classname)
+        }
+        console.log("Data:", res.DT)
+        console.log("Classname:", res.DT[0].class.classname)
       }
     } catch (error) {
       console.error("Error fetching summaries:", error)
@@ -98,7 +103,7 @@ export default function Summaries() {
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-              Ho va Ten
+              Name
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           )
@@ -109,7 +114,7 @@ export default function Summaries() {
             <div className="flex items-center">
               <Avatar className="h-10 w-10 mr-3">
                 <img
-                  src={student.User.image || "/student.png"}
+                  src={student.User.image || "student.png"}
                   alt={student.studentname}
                   className="rounded-full object-cover"
                 />
@@ -124,7 +129,7 @@ export default function Summaries() {
       },
       {
         accessorKey: "class.classname",
-        header: "Lop",
+        header: "Class",
       },
       {
         accessorKey: "concludebehaviorpoint",
@@ -156,11 +161,11 @@ export default function Summaries() {
         <Button variant="outline" size="icon" onClick={handlePrevious} className="mr-4">
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold">Điểm số</h1>
+        <h1 className="text-2xl font-bold">Grades</h1>
       </div>
       <div className="flex items-center mb-6">
-        <h2 className="text-xl font-semibold mr-4">Lớp: {classname}</h2>
-        <h2 className="text-xl font-semibold">Học bạ</h2>
+        <h2 className="text-xl font-semibold mr-4">Class: {classname}</h2>
+        <h2 className="text-xl font-semibold">Summaries</h2>
       </div>
       <div className="rounded-md border">
         <Table>

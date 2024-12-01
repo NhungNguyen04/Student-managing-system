@@ -101,7 +101,7 @@ export default function Class() {
     <div className="mb-8">
       <div className="flex items-center mb-4">
         <div className="bg-primary text-primary-foreground rounded-full px-4 py-2 mr-2">
-          <p className="font-semibold">Khối {grade}</p>
+          <p className="font-semibold">Grade {grade}</p>
         </div>
         <Button variant="outline" size="icon" onClick={() => openAddClassModal(grade)}>
           <PlusCircle className="h-4 w-4" />
