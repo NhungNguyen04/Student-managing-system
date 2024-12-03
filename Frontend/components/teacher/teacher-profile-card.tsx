@@ -31,7 +31,7 @@ export function TeacherProfileCard() {
     const [name, setName] = React.useState("")
     const [email, setEmail] = React.useState("")
     const [createdAt, setCreatedAt] = React.useState("")
-  
+    const [image,setImage] = React.useState("")
   
     useEffect( ()=>
     {
@@ -42,6 +42,7 @@ export function TeacherProfileCard() {
             setName(response.username);
             setEmail(response.email);
             setCreatedAt(new Date(response.createdAt).toISOString().slice(0,10) );
+            setImage(response.image);
         }
         fetchAccountData();
     },[]
@@ -64,7 +65,7 @@ export function TeacherProfileCard() {
             <CardContent className="flex w-auto">
               <div className="flex w-48">
                 <Avatar className ="relative flex h-32 w-32 shrink-0 overflow-hidden rounded-full">
-                  <AvatarImage src={DEFAULT_IMG} className="rounded-full border-[6px] border-[#E6EFFA]"/>
+                  <AvatarImage src={image?image:DEFAULT_IMG} className="rounded-full border-[6px] border-[#E6EFFA]"/>
                 </Avatar>
               </div>
               <div className="space-y-3">
