@@ -3,12 +3,12 @@ import { DirectorSidebar } from "@/components/director-sidebar"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
+    <main className="p-10">
     <SidebarProvider>
       <DirectorSidebar />
-      <main>
         <SidebarTrigger />
         {children}
-      </main>
     </SidebarProvider>
+    </main>
   )
 }

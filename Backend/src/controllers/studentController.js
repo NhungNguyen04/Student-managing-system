@@ -108,7 +108,6 @@ class StudentController {
   handleFindAllNonClassStudentByClassId = async (req, res) => {
     try {
       let classId = req.params.id;
-      let year = req.params.year;
       console.log(classId);
       await studentService
         .getAllNonClassStudentByClassId(classId)

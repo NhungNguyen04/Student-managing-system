@@ -90,7 +90,7 @@ const findAllGradesByYear = async (year) => {
 const findAllYear = async () => {
   try {
     const result = await db.grades.findAll({
-      attributes: ["year"],
+      attributes: [[db.Sequelize.fn('DISTINCT', db.Sequelize.col('year')), 'year']],
     });
     return {
       EM: "success",

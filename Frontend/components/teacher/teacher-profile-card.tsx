@@ -32,7 +32,6 @@ export function TeacherProfileCard() {
     const [email, setEmail] = React.useState("")
     const [createdAt, setCreatedAt] = React.useState("")
     const [image,setImage] = React.useState("")
-  
     useEffect( ()=>
     {
         const fetchAccountData = async() =>
