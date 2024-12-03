@@ -1,15 +1,14 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CalendarIcon, Upload } from 'lucide-react'
+import { subjectApi, teacherApi } from "@/apis"
+import { toast } from "react-toastify"
 
 interface OnlyAddTeacherModalProps {
   isOpen: boolean
@@ -22,9 +21,19 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
   const [email, setEmail] = useState("")
   const [gender, setGender] = useState("Nam")
   const [birthDate, setBirthDate] = useState<Date>()
-  const [subject, setSubject] = useState("")
   const [avatar, setAvatar] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [subjectId, setSubjectId] = useState<string | undefined>(undefined)
+  const [subjectName, setSubjectName] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function getAllSubject() {
+      let res = await subjectApi.getAllSubject()
+      setSubjectId(res.DT[0].id)
+      setSubjectName(res.DT[0].subjectname)
+    }
+    getAllSubject()
+  }, [])
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -40,11 +49,31 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Implement your form submission logic here
-    console.log({ name, email, gender, birthDate, subject, avatar })
-    // Close the modal and update the table
-    onClose()
-    setCheckReLoading(true)
+    const formData = new FormData()
+    if (avatar) {
+      formData.append("image", avatar)
+    }
+    formData.append("teachername", name)
+    formData.append("birthDate", birthDate?.toISOString() || "")
+    formData.append("startDate", "2024-06-06")
+    formData.append("gender", gender === "Nam" ? "1" : "2")
+    formData.append("email", email)
+    formData.append("subjectId", subjectId || "")
+
+    const res1 = await teacherApi.createTeacher(formData)
+    if (res1.EC === 0) {
+      toast.success("Thêm giáo viên thành công!")
+      setAvatar(null)
+      setBirthDate(undefined)
+      setEmail("")
+      setGender("Nam")
+      setName("")
+      setPreview(null)
+      onClose()
+      setCheckReLoading(true)
+    } else {
+      toast.error(res1.EM)
+    }
   }
 
   return (
@@ -106,37 +135,24 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
           </div>
           <div className="space-y-2">
             <Label>Ngày sinh</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !birthDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {birthDate ? format(birthDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={birthDate}
-                  onSelect={setBirthDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="birthDate"
+              type="date"
+              value={birthDate ? format(birthDate, "yyyy-MM-dd") : ""}
+              onChange={(e) => setBirthDate(e.target.value ? new Date(e.target.value) : undefined)}
+              className="w-full"
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="subject">Môn học</Label>
-            <Input
-              id="subject"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              required
-            />
+            <Select value={subjectId} onValueChange={setSubjectId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select subject" />
+              </SelectTrigger>
+              <SelectContent>
+                {subjectId && <SelectItem value={subjectId}>{subjectName}</SelectItem>}
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex justify-end space-x-2">
             <Button type="submit">Lưu</Button>

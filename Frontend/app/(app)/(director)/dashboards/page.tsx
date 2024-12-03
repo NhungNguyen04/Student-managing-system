@@ -41,28 +41,28 @@ export default function Dashboard() {
   const fetchExcellentStudent = async () => {
     let getData = await dashboardApi.getExcellentStudent(selectYear)
     if (getData.EC !== 1) {
-      setExcellentStudents(getData.DT)
+      setExcellentStudents(getData.DT.filter((student: any) => student !== null))
     }
   }
 
   const fetchTop10Students = async () => {
     let getData = await dashboardApi.getTop10Students(selectYear)
     if (getData.EC !== 1) {
-      setData(getData.DT)
+      setData(getData.DT.filter((student: any) => student !== null))
     }
   }
 
   const fetchNumberOfStudentByTitle = async () => {
     let getData = await dashboardApi.getNumberOfStudentsWithType(selectYear)
     if (getData.EC !== 1) {
-      setNumberByTitle(getData.DT)
+      setNumberByTitle(getData.DT.filter((item: any) => item !== null))
     }
   }
 
   const fetchECompare3Year = async () => {
     let getData = await dashboardApi.getCompare3year(selectYear)
     if (getData.EC !== 1) {
-      setCompare3Year(getData.DT)
+      setCompare3Year(getData.DT.filter((item: any) => item !== null))
     }
   }
 

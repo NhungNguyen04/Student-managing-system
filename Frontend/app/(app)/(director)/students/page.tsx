@@ -154,7 +154,7 @@ export default function StudentManagement() {
           const student = row.original
           return (
             <div className="flex space-x-2">
-              <Button variant="ghost" size="icon" onClick={() => handleViewTranscript(student.id)}>
+              <Button variant="ghost" size="icon" onClick={() => handleViewTranscript(student.id, student.studentname)}>
                 <List className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" onClick={() => handleViewProfile(student.id)}>
@@ -186,8 +186,8 @@ export default function StudentManagement() {
     },
   })
 
-  const handleViewTranscript = (id: string) => {
-    router.push(`/summaries/my-transcript/${id}`)
+  const handleViewTranscript = (id: string, name: string) => {
+    router.push(`/student-summaries/${id}?name=${encodeURIComponent(name)}`)
   }
 
   const handleViewProfile = (id: string) => {

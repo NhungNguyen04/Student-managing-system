@@ -2,11 +2,22 @@
 
 import { useEffect, useState } from "react"
 import { AssignmentTable } from "@/components/assignment-table"
-import { assignmentApi, gradeApi } from "@/apis"
+import { UnassignedTable } from "@/components/unassigned-table"
+import { assignmentApi, gradeApi, subjectApi, classApi } from "@/apis"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+interface UnassignedItem {
+  id: string
+  class: { classname: string }
+  subject: { subjectname: string }
+  subjectId: string
+  classId: string
+  teacherId: number | null
+}
 
 export default function Assignment() {
   const [data, setData] = useState([])
+  const [unassignedData, setUnassignedData] = useState<UnassignedItem[]>([])
   const [checkReLoading, setCheckReLoading] = useState(false)
   const [selectYear, setSelectYear] = useState("")
   const [years, setYears] = useState<number[]>([])
@@ -27,8 +38,47 @@ export default function Assignment() {
   const fetchAllAssignment = async () => {
     if (selectYear) {
       const res = await assignmentApi.getAllAssignmentByYear(selectYear)
+      console.log(res);
       if (res.EC !== 1) {
         setData(res.DT)
+      }
+    }
+  }
+
+  const fetchUnassignedData = async () => {
+    if (selectYear) {
+      const [subjectsRes, classesRes, assignmentsRes] = await Promise.all([
+        subjectApi.getAllSubject(),
+        classApi.getAllClassByGradeAndYear("gradeName", selectYear),
+        assignmentApi.getAllAssignmentByYear(selectYear)
+      ])
+
+      if (subjectsRes.EC !== 1 && classesRes.EC !== 1 && assignmentsRes.EC !== 1) {
+        const subjects = subjectsRes.DT
+        const classes = classesRes.DT
+        const assignments = assignmentsRes.DT
+
+        const unassigned: UnassignedItem[] = []
+
+        classes.forEach((classItem: any) => {
+          subjects.forEach((subject: any) => {
+            const isAssigned = assignments.some((assignment: any) =>
+              assignment.classId === classItem.id && assignment.subjectId === subject.id
+            )
+            if (!isAssigned) {
+              unassigned.push({
+                id: `${classItem.id}-${subject.id}`,
+                class: classItem,
+                subject: subject,
+                subjectId: subject.id,
+                classId: classItem.id,
+                teacherId: null
+              })
+            }
+          })
+        })
+
+        setUnassignedData(unassigned)
       }
     }
   }
@@ -36,6 +86,7 @@ export default function Assignment() {
   useEffect(() => {
     if (selectYear) {
       fetchAllAssignment()
+      fetchUnassignedData()
     }
   }, [selectYear, checkReLoading])
 
@@ -61,7 +112,11 @@ export default function Assignment() {
         checkReLoading={checkReLoading}
         setCheckReLoading={setCheckReLoading}
       />
+      <UnassignedTable
+        data={unassignedData}
+        checkReLoading={checkReLoading}
+        setCheckReLoading={setCheckReLoading}
+      />
     </div>
   )
 }
-

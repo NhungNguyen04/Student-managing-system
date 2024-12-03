@@ -55,7 +55,9 @@ export function AddStudentModal({ isOpenAddStudent, closeAddStudentModal, classI
 
   const fetchAllStudentNotInClass = async () => {
     try {
+      console.log('classId', classId); 
       const res = await studentApi.getAllStudentNotInClass(classId)
+      console.log("student not in class", res);
       setData(res.DT)
     } catch (error) {
       console.error("Error fetching students:", error)

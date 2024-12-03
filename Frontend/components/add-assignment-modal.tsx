@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,7 @@ interface AddAssignmentModalProps {
   assignment: {
     subjectId: string
     classId: string
-    teacherId: string | null
+    teacherId: number | null
     subject: { subjectname: string }
     class: { classname: string }
     teacher?: { teacherName: string }
@@ -33,8 +33,16 @@ export default function AddAssignmentModal({
   const [assignmentInfo, setAssignmentInfo] = useState({
     subjectId: assignment.subjectId,
     classId: assignment.classId,
-    teacherId: assignment.teacherId || "",
+    teacherId: assignment.teacherId || 0,
   })
+
+  useEffect(() => {
+    setAssignmentInfo({
+      subjectId: assignment.subjectId,
+      classId: assignment.classId,
+      teacherId: assignment.teacherId || 0,
+    })
+  }, [assignment])
 
   const handleChange = (name: string, value: string) => {
     setAssignmentInfo((prev) => ({
@@ -46,9 +54,11 @@ export default function AddAssignmentModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
+      console.log(assignmentInfo);
       const res = await assignmentApi.createAssignment(assignmentInfo)
+      console.log(res);
       if (res.EC !== 1) {
-        toast.success("Phân công thành công")
+        toast.success(assignment.teacherId ? "Cập nhật thành công" : "Phân công thành công")
         setCheckReLoading(!checkReLoading)
       } else {
         toast.error(res.EM)
@@ -87,8 +97,7 @@ export default function AddAssignmentModal({
           </div>
           <TeacherComboBox
             handleChange={handleChange}
-            teacher={assignment.teacher}
-            teacherId={assignment.teacherId ?? undefined}
+            teacherId={assignment.teacherId && assignment.teacherId > 0 ? assignment.teacherId : undefined}
             subjectId={assignment.subjectId}
           />
           <div className="flex justify-end space-x-2">

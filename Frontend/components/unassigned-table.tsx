@@ -23,23 +23,22 @@ import {
 } from "@/components/ui/table"
 import AddAssignmentModal from "./add-assignment-modal"
 
-interface Assignment {
+interface Unassigned {
   id: string
   class: { classname: string }
   subject: { subjectname: string }
-  teacher?: { teacherName: string }
   subjectId: string
   classId: string
   teacherId: number | null
 }
 
-interface AssignmentTableProps {
-  data: Assignment[]
+interface UnassignedTableProps {
+  data: Unassigned[]
   checkReLoading: boolean
   setCheckReLoading: (value: boolean) => void
 }
 
-export function AssignmentTable({ data, checkReLoading, setCheckReLoading }: AssignmentTableProps) {
+export function UnassignedTable({ data, checkReLoading, setCheckReLoading }: UnassignedTableProps) {
   const [columnFilters, setColumnFilters] = useState<{ id: string; value: any }[]>([])
   const [checkId, setCheckId] = useState<string | null>(null)
   const [isOpenAddTuitionModal, setIsOpenAddTuitionModal] = useState(false)
@@ -50,7 +49,7 @@ export function AssignmentTable({ data, checkReLoading, setCheckReLoading }: Ass
     setIsOpenAddTuitionModal(true)
   }
 
-  const columns: ColumnDef<Assignment>[] = [
+  const columns: ColumnDef<Unassigned>[] = [
     {
       accessorKey: "id",
       header: "STT",
@@ -83,15 +82,6 @@ export function AssignmentTable({ data, checkReLoading, setCheckReLoading }: Ass
           </Button>
         )
       },
-    },
-    {
-      accessorKey: "teacher.teacherName",
-      header: "Giáo viên",
-      cell: ({ row }) => (
-        <div>
-          {row.original.teacher ? row.original.teacher.teacherName : "Null"}
-        </div>
-      ),
     },
     {
       id: "actions",

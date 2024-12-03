@@ -7,12 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { toast } from "@/hooks/use-toast"
 import { format } from "date-fns"
 import { CalendarIcon, Upload } from 'lucide-react'
-import { cn } from "@/lib/utils"
 import { studentApi } from "@/apis"
 
 interface OnlyAddStudentModalProps {
@@ -29,6 +25,7 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
   const [email, setEmail] = useState("")
   const [avatar, setAvatar] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handlePreviewAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -44,45 +41,38 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
 
   const handleSaveClick = async () => {
     if (!name || !birthDate || !email || !address) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please fill in all required fields.",
-      })
-      return
+      alert("Please fill in all required fields.");
+      return;
     }
 
-    const formData = new FormData()
+    setIsLoading(true);
+
+    const formData = new FormData();
 
     if (avatar) {
-      formData.append("image", avatar)
+      formData.append("image", avatar);
     }
 
-    formData.append("studentname", name)
-    formData.append("birthDate", birthDate.toISOString())
-    formData.append("startDate", new Date().toISOString())
-    formData.append("gender", gender === "Nam" ? "1" : "2")
-    formData.append("email", email)
-    formData.append("address", address)
+    formData.append("studentname", name);
+    formData.append("birthDate", birthDate.toISOString());
+    formData.append("startDate", new Date().toISOString());
+    formData.append("gender", gender === "Nam" ? "1" : "2");
+    formData.append("email", email);
+    formData.append("address", address);
 
     try {
-      const res = await studentApi.createStudent(formData)
+      const res = await studentApi.createStudent(formData);
       if (res.EC === 0) {
-        toast({
-          title: "Success",
-          description: "Thêm học sinh thành công!",
-        })
-        onClose()
+        alert("Thêm học sinh thành công!");
+        onClose();
       } else {
-        throw new Error(res.EM)
+        throw new Error(res.EM);
       }
     } catch (error) {
-      console.error("Error creating student:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
-      })
+      console.error("Error creating student:", error);
+      alert(error instanceof Error ? error.message : "An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -116,28 +106,13 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
             <Label htmlFor="birthDate" className="text-right">
               Ngày sinh
             </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[280px] justify-start text-left font-normal",
-                    !birthDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {birthDate ? format(birthDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={birthDate}
-                  onSelect={setBirthDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="birthDate"
+              type="date"
+              value={birthDate ? format(birthDate, "yyyy-MM-dd") : ""}
+              onChange={(e) => setBirthDate(e.target.value ? new Date(e.target.value) : undefined)}
+              className="col-span-3"
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="gender" className="text-right">
@@ -167,7 +142,9 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSaveClick}>Lưu</Button>
+          <Button type="submit" onClick={handleSaveClick} disabled={isLoading}>
+            {isLoading ? 'Đang lưu...' : 'Lưu'}
+          </Button>
           <Button type="button" variant="outline" onClick={onClose}>Hủy</Button>
         </DialogFooter>
       </DialogContent>

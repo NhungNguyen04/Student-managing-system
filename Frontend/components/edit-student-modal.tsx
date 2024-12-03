@@ -7,9 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { toast } from "@/hooks/use-toast"
 import { format } from "date-fns"
 import { CalendarIcon, Upload } from 'lucide-react'
 import { cn } from "@/lib/utils"
@@ -55,11 +53,7 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
       setPreview(res.DT.User?.image || null)
     } catch (error) {
       console.error("Error fetching student:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch student data",
-      })
+      alert("Failed to fetch student data")
     }
   }
 
@@ -84,10 +78,7 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
     try {
       const res = await studentApi.updateStudent(id, formData)
       if (res.EC === 0) {
-        toast({
-          title: "Success",
-          description: "Chỉnh sửa thông tin thành công",
-        })
+        alert("Chỉnh sửa thông tin thành công");
         setCheckReloading(!checkReloading)
         onClose()
       } else {
@@ -95,11 +86,7 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
       }
     } catch (error) {
       console.error("Error updating student:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Không thể chỉnh sửa thông tin",
-      })
+      alert("Không thể chỉnh sửa thông tin");
     }
   }
 
@@ -133,28 +120,13 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
             <Label htmlFor="birthDate" className="text-right">
               Ngày sinh
             </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[280px] justify-start text-left font-normal",
-                    !birthDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {birthDate ? format(birthDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={birthDate}
-                  onSelect={setBirthDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              id="birthDate"
+              type="date"
+              value={birthDate ? format(birthDate, "yyyy-MM-dd") : ""}
+              onChange={(e) => setBirthDate(e.target.value ? new Date(e.target.value) : undefined)}
+              className="col-span-3"
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="gender" className="text-right">
