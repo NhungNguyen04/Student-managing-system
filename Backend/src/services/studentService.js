@@ -487,58 +487,20 @@ const getAllNonClassStudentByClassId = async (classId) => {
     });
     let year = yearTemp.dataValues.year;
     let className = classNameTemp.dataValues.classname;
-    //lấy học sinh chưa có lớp 10: tức là chưa có bất kì học bạ nào đạt
-    if (className.startsWith("10")) {
-      freeStudentsInThisYear = await sequelize.query(
-        `select distinct s.id, s.studentname, s.gender, u.username, u.email, u.image from students s
-      left join schoolreports sr 
-      on s.id = sr.studentId 
-      inner join users u 
-      on s.userId = u.id
-      where u.isLocked = "0"
-      and (sr.studentId is null or not exists
-      (select 1 from schoolreports where studentId = s.id and concludetitle <> 'yếu')) and s.statusinyear = 0`,
-        {
-          replacements: { year },
-          type: sequelize.QueryTypes.SELECT,
-        }
-      );
-    }
-
-    //lấy học sinh chưa có lớp 11: tức là có 2 học bạ đạt
-    else if (className.startsWith("11")) {
-      freeStudentsInThisYear = await sequelize.query(
-        `select distinct s.id, s.studentname, s.gender, u.username, u.email, u.image from students s
-      left join schoolreports sr 
-      on s.id = sr.studentId 
-      inner join users u 
-      on s.userId = u.id
-      where u.isLocked = "0"
-      and sr.concludetitle <> 'yếu'
-      and s.statusinyear = 0
-      group by s.id having count(*) = 1`,
-        {
-          replacements: { year },
-          type: sequelize.QueryTypes.SELECT,
-        }
-      );
-    } else if (className.startsWith("12")) {
-      freeStudentsInThisYear = await sequelize.query(
-        `select distinct s.id, s.studentname, s.gender, u.username, u.email, u.image from students s
-      left join schoolreports sr 
-      on s.id = sr.studentId 
-      inner join users u 
-      on s.userId = u.id
-      where u.isLocked = "0"
-      and sr.concludetitle <> 'yếu'
-      and s.statusinyear = 0
-      group by s.id having count(*) = 2 `,
-        {
-          replacements: { year },
-          type: sequelize.QueryTypes.SELECT,
-        }
-      );
-    }
+    freeStudentsInThisYear = await sequelize.query(
+      `select distinct s.id, s.studentname, s.gender, u.username, u.email, u.image from students s
+    left join schoolreports sr 
+    on s.id = sr.studentId 
+    inner join users u 
+    on s.userId = u.id
+    where u.isLocked = "0"
+    and (sr.studentId is null or not exists
+    (select 1 from schoolreports where studentId = s.id and concludetitle <> 'yếu')) and s.statusinyear = 0`,
+      {
+        replacements: { year },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
     return {
       EM: "success",
       EC: 0,

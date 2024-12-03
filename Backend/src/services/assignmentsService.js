@@ -13,23 +13,24 @@ const assignTeacherIntoClasses = async (teacherId, classId, subjectId) => {
     });
 
     if (assignment === null) {
-      return {
-        EM: "not found this assignment",
-        EC: 1,
-        DT: "",
-      };
+      assignment = await db.assignments.create({
+        teacherId: teacherId,
+        classId: classId,
+        subjectId: subjectId
+      });
+    } else {
+      await db.assignments.update(
+        {
+          teacherId: teacherId,
+        },
+        {
+          where: {
+            id: assignment.id,
+          },
+        }
+      );
     }
 
-    let data = await db.assignments.update(
-      {
-        teacherId: teacherId,
-      },
-      {
-        where: {
-          id: assignment.id,
-        },
-      }
-    );
     return {
       EM: "success",
       EC: 0,

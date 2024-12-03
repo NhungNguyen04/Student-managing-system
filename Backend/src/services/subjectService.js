@@ -79,6 +79,18 @@ const createSubject = async(name, fifteenMinFactor, fourtyFiveMinFactor, finalFa
             factor: factor,
             isdeleted: 0,
         });
+
+        // Create assignments for all classes with teacherId null
+        let classes = await db.classes.findAll();
+
+        for (const classItem of classes) {
+            await db.assignments.create({
+                classId: classItem.id,
+                subjectId: newSubject.id,
+                teacherId: null,
+            });
+        }
+
         return {
             EM: "success",
             EC: 0,
