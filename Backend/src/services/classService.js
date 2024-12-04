@@ -1,7 +1,9 @@
 import { where } from "sequelize";
 import db, { Sequelize, sequelize } from "../models/index";
 import subjects from "../models/subjects";
-import availableFunc from "../middleware/availableFunction"
+import availableFunc from "../middleware/availableFunction";
+import {assignTeacherIntoClasses} from "./assignmentsService";
+
 
 const createNewClassService = async (classname, total, homeroomTeacher, gradeId) => {
   let checkHomeRoomTeacher = {};
@@ -119,10 +121,11 @@ const createNewClassService = async (classname, total, homeroomTeacher, gradeId)
     });
 
     for (const subject of subjects) {
-      await db.assignments.create({
-        classId: data.id,
-        subjectId: subject.id,
-      });
+      assignTeacherIntoClasses(
+        null,
+        data.id,
+        subject.id,
+    );
     }
 
     return {

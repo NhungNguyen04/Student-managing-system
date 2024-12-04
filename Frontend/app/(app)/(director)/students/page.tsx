@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Edit, Info, List, Search, Trash2, UserPlus } from 'lucide-react'
+import { ArrowUpDown, Edit, Info, List, Search, Trash2, UserPlus, Upload } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -35,6 +35,7 @@ import { OnlyAddStudentModal } from '@/components/only-add-student-modal'
 import { StudentProfileView } from '@/components/student-profile-view'
 import { EditStudent } from '@/components/edit-student-modal'
 import { DeleteStudent } from '@/components/delete-student-modal'
+import { ExcelUploadModal } from '@/components/excel-upload-modal'
 
 export default function StudentManagement() {
   const router = useRouter()
@@ -49,6 +50,7 @@ export default function StudentManagement() {
   const [isOpenDeleteStudent, setIsOpenDeleteStudent] = useState(false)
   const [selectYear, setSelectYear] = useState<number>()
   const [columnFilters, setColumnFilters] = useState<any[]>([])
+  const [isOpenExcelUpload, setIsOpenExcelUpload] = useState(false)
 
   const fetchAllStudent = async () => {
     try {
@@ -100,7 +102,7 @@ export default function StudentManagement() {
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-              Họ và Tên
+              Name
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           )
@@ -123,22 +125,22 @@ export default function StudentManagement() {
       },
       {
         accessorKey: "gradename",
-        header: "Khối",
+        header: "Grade",
       },
       {
         accessorKey: "classname",
-        header: "Lớp",
+        header: "Class",
       },
       {
         accessorKey: "gender",
-        header: "Giới tính",
+        header: "Gender",
         cell: ({ row }: any) => (
-          <div>{row.original.gender === "1" ? "Nam" : "Nữ"}</div>
+          <div>{row.original.gender === "1" ? "Male" : "Female"}</div>
         ),
       },
       {
         accessorKey: "year",
-        header: "Năm",
+        header: "Year",
         cell: ({ row }: any) => (
           <div>
             {row.original.year === "null" 
@@ -226,7 +228,7 @@ export default function StudentManagement() {
                 })
               }}
             >
-              Khối {grade}
+              Grade {grade}
             </Button>
           ))}
         </div>
@@ -243,12 +245,12 @@ export default function StudentManagement() {
         <div className="flex space-x-4">
           <Card>
             <CardContent className="flex items-center justify-center h-20">
-              <p className="text-xl font-medium">Số học sinh: {studentCount}</p>
+              <p className="text-xl font-medium">Students count: {studentCount}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="flex items-center justify-center h-20">
-              <p className="text-xl font-medium">Số lớp: {classCount}</p>
+              <p className="text-xl font-medium">Classes count : {classCount}</p>
             </CardContent>
           </Card>
         </div>
@@ -262,9 +264,13 @@ export default function StudentManagement() {
               {/* Add other year options dynamically */}
             </SelectContent>
           </Select>
+          <Button onClick={() => setIsOpenExcelUpload(true)}>
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Excel
+          </Button>
           <Button onClick={() => setIsOpenAddStudent(true)}>
             <UserPlus className="mr-2 h-4 w-4" />
-            Thêm học sinh
+            Add student
           </Button>
         </div>
       </div>
@@ -341,6 +347,15 @@ export default function StudentManagement() {
           isStudentView={true}
           setCheckReloading={setCheckReload}
           checkReloading={checkReload}
+        />
+      )}
+      {isOpenExcelUpload && (
+        <ExcelUploadModal
+          isOpen={isOpenExcelUpload}
+          onClose={() => setIsOpenExcelUpload(false)}
+          onUploadSuccess={() => {
+            setCheckReload(!checkReload)
+          }}
         />
       )}
     </div>

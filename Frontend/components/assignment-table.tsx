@@ -53,7 +53,7 @@ export function AssignmentTable({ data, checkReLoading, setCheckReLoading }: Ass
   const columns: ColumnDef<Assignment>[] = [
     {
       accessorKey: "id",
-      header: "STT",
+      header: "No.",
       cell: ({ row }) => <span>{row.index + 1}</span>,
     },
     {
@@ -64,7 +64,7 @@ export function AssignmentTable({ data, checkReLoading, setCheckReLoading }: Ass
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Lớp
+            Class
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
@@ -78,7 +78,7 @@ export function AssignmentTable({ data, checkReLoading, setCheckReLoading }: Ass
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Môn học
+            Subject
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
@@ -86,7 +86,7 @@ export function AssignmentTable({ data, checkReLoading, setCheckReLoading }: Ass
     },
     {
       accessorKey: "teacher.teacherName",
-      header: "Giáo viên",
+      header: "Teacher",
       cell: ({ row }) => (
         <div>
           {row.original.teacher ? row.original.teacher.teacherName : "Null"}

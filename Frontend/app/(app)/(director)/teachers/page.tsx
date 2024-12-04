@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from "react"
 import { teacherApi } from "@/apis"
 import { Button } from "@/components/ui/button"
-import { Plus } from 'lucide-react'
+import { Plus, Upload } from 'lucide-react'
 import { TeacherTable } from "@/components/teacher-table"
 import { OnlyAddTeacherModal } from "@/components/only-add-teacher-modal"
 import { toast } from "@/hooks/use-toast"
+import { ExcelUploadTeacherModal } from "@/components/excel-upload-teacher-modal"
 
 interface Teacher {
   id: string
@@ -21,7 +22,11 @@ export default function Teacher() {
   const [data, setData] = useState<Teacher[]>([])
   const [checkReLoading, setCheckReLoading] = useState(false)
   const [isOpenOnlyAddTeacherModal, setIsOpenOnlyAddTeacherModal] = useState(false)
+  const [isOpenExcelUploadModal, setIsOpenExcelUploadModal] = useState(false);
 
+  const openExcelUploadModal = () => {
+    setIsOpenExcelUploadModal(true);
+  };
   const fetchAllTeacher = async () => {
     try {
       const res = await teacherApi.getAllTeacher()
@@ -29,7 +34,7 @@ export default function Teacher() {
         setData(res.DT)
         toast({
           title: "Success",
-          description: "Lấy danh sách thành công!!!",
+          description: "Fetched teachers list successfully!!!",
         })
       } else {
         toast({
@@ -67,11 +72,20 @@ export default function Teacher() {
         <Button onClick={openOnlyAddTeacherModal}>
           <Plus className="mr-2 h-4 w-4" /> Add Teacher
         </Button>
+        <Button onClick={openExcelUploadModal}>
+            <Upload className="mr-2 h-4 w-4" /> Upload Excel
+          </Button>
       </div>
       <TeacherTable data={data} setCheckReLoading={setCheckReLoading} />
       <OnlyAddTeacherModal
         isOpen={isOpenOnlyAddTeacherModal}
         onClose={closeOnlyAddTeacherModal}
+        setCheckReLoading={setCheckReLoading}
+      />
+      <ExcelUploadTeacherModal
+        isOpen={isOpenExcelUploadModal}
+        onClose={() => setIsOpenExcelUploadModal(false)}
+        onUploadSuccess={() => setCheckReLoading(prev => !prev)}
         setCheckReLoading={setCheckReLoading}
       />
     </div>

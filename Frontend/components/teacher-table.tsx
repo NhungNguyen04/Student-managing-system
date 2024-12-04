@@ -64,7 +64,7 @@ export function TeacherTable({ data, setCheckReLoading }: TeacherTableProps) {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Giáo viên
+            Teacher
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
@@ -87,29 +87,29 @@ export function TeacherTable({ data, setCheckReLoading }: TeacherTableProps) {
     },
     {
       accessorKey: "birthDate",
-      header: "Ngày sinh",
+      header: "Birth date",
       cell: ({ row }: { row: any }) => {
         return new Date(row.getValue("birthDate")).toLocaleDateString("vi-VN")
       },
     },
     {
       accessorKey: "startDate",
-      header: "Ngày bắt đầu",
+      header: "Start date",
       cell: ({ row }: { row: any }) => {
         return new Date(row.getValue("startDate")).toLocaleDateString("vi-VN")
       },
     },
     {
       accessorKey: "gender",
-      header: "Giới tính",
+      header: "Gender",
       cell: ({ row }: { row: any }) => {
         const gender = row.getValue("gender")
-        return gender === "1" ? "Nam" : gender === "0" ? "Nữ" : "Khác"
+        return gender === "1" ? "Male" : gender === "2" ? "Female" : "Other"
       },
     },
     {
       accessorKey: "subject.subjectname",
-      header: "Môn học",
+      header: "Subject",
     },
     {
       id: "actions",

@@ -63,7 +63,7 @@ export function StudentTable({ data, role, checkReloading, setCheckReloading }: 
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-              Họ và Tên
+              Name
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           )
@@ -89,7 +89,7 @@ export function StudentTable({ data, role, checkReloading, setCheckReloading }: 
       },
       {
         accessorKey: "student.gender",
-        header: "Giới tính",
+        header: "Gender",
         cell: ({ row }: any) => (
           <div>{row.original.student.gender === "1" ? "Nam" : "Nữ"}</div>
         ),

@@ -10,8 +10,8 @@ interface Teacher {
 }
 
 interface TeacherComboBoxProps {
-  handleChange: (name: string, value: number) => void
-  subjectId: number
+  handleChange: (name: string, value: string) => void
+  subjectId: string
   teacher?: { teacherName: string }
   teacherId?: number
 }
@@ -39,7 +39,7 @@ export function TeacherComboBox({ handleChange, subjectId, teacherId }: TeacherC
   }, [fetchAllTeacher])
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = parseInt(event.target.value, 10)
+    const selectedValue = event.target.value
     setValue(selectedValue)
     handleChange("teacherId", selectedValue)
   }

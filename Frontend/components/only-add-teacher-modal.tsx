@@ -9,6 +9,7 @@ import { format } from "date-fns"
 import { CalendarIcon, Upload } from 'lucide-react'
 import { subjectApi, teacherApi } from "@/apis"
 import { toast } from "react-toastify"
+import SubjectComboBox from "./subject-combo-box"
 
 interface OnlyAddTeacherModalProps {
   isOpen: boolean
@@ -19,18 +20,18 @@ interface OnlyAddTeacherModalProps {
 export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: OnlyAddTeacherModalProps) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [gender, setGender] = useState("Nam")
+  const [gender, setGender] = useState("Male")
   const [birthDate, setBirthDate] = useState<Date>()
   const [avatar, setAvatar] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [subjectId, setSubjectId] = useState<string | undefined>(undefined)
-  const [subjectName, setSubjectName] = useState<string | null>(null)
+  const [subjects, setSubjects] = useState<{ id: string, subjectname: string }[]>([])
 
   useEffect(() => {
     async function getAllSubject() {
       let res = await subjectApi.getAllSubject()
+      setSubjects(res.DT)
       setSubjectId(res.DT[0].id)
-      setSubjectName(res.DT[0].subjectname)
     }
     getAllSubject()
   }, [])
@@ -47,6 +48,10 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
     }
   }
 
+  const handleSubjectChange = (value: string) => {
+    setSubjectId(value)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const formData = new FormData()
@@ -56,17 +61,17 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
     formData.append("teachername", name)
     formData.append("birthDate", birthDate?.toISOString() || "")
     formData.append("startDate", "2024-06-06")
-    formData.append("gender", gender === "Nam" ? "1" : "2")
+    formData.append("gender", gender === "Male" ? "1" : "2")
     formData.append("email", email)
     formData.append("subjectId", subjectId || "")
 
     const res1 = await teacherApi.createTeacher(formData)
     if (res1.EC === 0) {
-      toast.success("Thêm giáo viên thành công!")
+      toast.success("Teacher added successfully!")
       setAvatar(null)
       setBirthDate(undefined)
       setEmail("")
-      setGender("Nam")
+      setGender("Male")
       setName("")
       setPreview(null)
       onClose()
@@ -80,7 +85,7 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Thêm giáo viên</DialogTitle>
+          <DialogTitle>New teacher</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col items-center space-y-2">
@@ -103,7 +108,7 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="name">Họ tên</Label>
+            <Label htmlFor="name">Name</Label>
             <Input
               id="name"
               value={name}
@@ -122,19 +127,19 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="gender">Giới tính</Label>
+            <Label htmlFor="gender">Gender</Label>
             <Select value={gender} onValueChange={setGender}>
               <SelectTrigger>
-                <SelectValue placeholder="Select gender" />
+                <SelectValue>{gender}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Nam">Nam</SelectItem>
-                <SelectItem value="Nữ">Nữ</SelectItem>
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Ngày sinh</Label>
+            <Label>Birth date</Label>
             <Input
               id="birthDate"
               type="date"
@@ -144,20 +149,16 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="subject">Môn học</Label>
-            <Select value={subjectId} onValueChange={setSubjectId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select subject" />
-              </SelectTrigger>
-              <SelectContent>
-                {subjectId && <SelectItem value={subjectId}>{subjectName}</SelectItem>}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="subject">Subject</Label>
+            <SubjectComboBox
+              setSubjectId={setSubjectId}
+              subjectId={subjectId}
+            />
           </div>
           <div className="flex justify-end space-x-2">
-            <Button type="submit">Lưu</Button>
+            <Button type="submit">Save</Button>
             <Button type="button" variant="outline" onClick={onClose}>
-              Hủy
+              Cancel
             </Button>
           </div>
         </form>

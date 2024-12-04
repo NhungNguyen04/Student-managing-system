@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { format } from "date-fns"
 import { CalendarIcon, Upload } from 'lucide-react'
 import { studentApi } from "@/apis"
+import { toast } from 'react-toastify';
 
 interface OnlyAddStudentModalProps {
   isOpen: boolean
@@ -41,7 +42,7 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
 
   const handleSaveClick = async () => {
     if (!name || !birthDate || !email || !address) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
@@ -56,21 +57,23 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
     formData.append("studentname", name);
     formData.append("birthDate", birthDate.toISOString());
     formData.append("startDate", new Date().toISOString());
-    formData.append("gender", gender === "Nam" ? "1" : "2");
+    formData.append("gender", gender === "Male" ? "1" : "2");
     formData.append("email", email);
     formData.append("address", address);
+
+    console.log("not excel form", formData);
 
     try {
       const res = await studentApi.createStudent(formData);
       if (res.EC === 0) {
-        alert("Thêm học sinh thành công!");
+        toast.success("Student added successfully!");
         onClose();
       } else {
         throw new Error(res.EM);
       }
     } catch (error) {
       console.error("Error creating student:", error);
-      alert(error instanceof Error ? error.message : "An unexpected error occurred");
+      toast.error(error instanceof Error ? error.message : "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +83,7 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Thêm học sinh</DialogTitle>
+          <DialogTitle>New student</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex flex-col items-center gap-4">
@@ -98,13 +101,13 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Họ tên
+              Name
             </Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="birthDate" className="text-right">
-              Ngày sinh
+              Birth date
             </Label>
             <Input
               id="birthDate"
@@ -116,21 +119,21 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="gender" className="text-right">
-              Giới tính
+              Gender
             </Label>
             <Select value={gender} onValueChange={setGender}>
               <SelectTrigger className="w-[280px]">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Nam">Nam</SelectItem>
-                <SelectItem value="Nữ">Nữ</SelectItem>
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="address" className="text-right">
-              Địa chỉ
+            Address
             </Label>
             <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} className="col-span-3" />
           </div>
@@ -143,9 +146,9 @@ export function OnlyAddStudentModal({ isOpen, onClose, year }: OnlyAddStudentMod
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleSaveClick} disabled={isLoading}>
-            {isLoading ? 'Đang lưu...' : 'Lưu'}
+            {isLoading ? 'Saving...' : 'Save'}
           </Button>
-          <Button type="button" variant="outline" onClick={onClose}>Hủy</Button>
+          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

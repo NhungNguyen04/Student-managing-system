@@ -1,6 +1,6 @@
 import { where } from "sequelize";
 import db, { Sequelize, sequelize } from "../models/index";
-import availableFunc from "../middleware/availableFunction"
+import {assignTeacherIntoClasses} from "./assignmentsService";
 
 const getAllSubject = async() => {
     let data = [];
@@ -82,13 +82,14 @@ const createSubject = async(name, fifteenMinFactor, fourtyFiveMinFactor, finalFa
 
         // Create assignments for all classes with teacherId null
         let classes = await db.classes.findAll();
+        console.log(classes);
 
         for (const classItem of classes) {
-            await db.assignments.create({
-                classId: classItem.id,
-                subjectId: newSubject.id,
-                teacherId: null,
-            });
+            assignTeacherIntoClasses(
+                null,
+                classItem.id,
+                newSubject.id
+            );
         }
 
         return {

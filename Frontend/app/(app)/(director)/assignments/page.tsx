@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { AssignmentTable } from "@/components/assignment-table"
-import { UnassignedTable } from "@/components/unassigned-table"
 import { assignmentApi, gradeApi, subjectApi, classApi } from "@/apis"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -109,11 +108,6 @@ export default function Assignment() {
       </div>
       <AssignmentTable
         data={data}
-        checkReLoading={checkReLoading}
-        setCheckReLoading={setCheckReLoading}
-      />
-      <UnassignedTable
-        data={unassignedData}
         checkReLoading={checkReLoading}
         setCheckReLoading={setCheckReLoading}
       />
