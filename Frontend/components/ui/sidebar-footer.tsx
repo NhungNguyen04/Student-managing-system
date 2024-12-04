@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { LogOut, User } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { accountApi } from '@/apis'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -24,10 +25,14 @@ export function SidebarUserFooter() {
   const router = useRouter()
   const { logOut, userId } = useAuth()
   const [role,setRole] = useState("");
+  const [image,setImage] = useState("");
   useEffect( () => {
       const fetch =async()=>
       {
-      const RoleTake = localStorage.getItem('role') 
+      const RoleTake = localStorage.getItem('role')
+      const id = localStorage.getItem('userId')
+      const response = await accountApi.getAccountById(id);
+      setImage(response.image)
       setRole(RoleTake?RoleTake:"");
       }
       fetch();
@@ -64,6 +69,8 @@ export function SidebarUserFooter() {
 
   const getimgsource = (role:string) =>
   {
+    if(image) return image;
+    else
     switch(role)
     {
       case '1':
