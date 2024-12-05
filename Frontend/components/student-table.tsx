@@ -41,7 +41,7 @@ export function StudentTable({ data, role, checkReloading, setCheckReloading }: 
   const [selectedId, setSelectedId] = useState<string>('')
 
   const handleClick = (id: string) => {
-    router.push(`/summaries/my-transcript/${id}`)
+    router.push(`/student-summaries/${id}`)
   }
 
   const columns = useMemo(

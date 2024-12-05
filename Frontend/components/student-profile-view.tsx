@@ -54,7 +54,7 @@ export function StudentProfileView({ isOpen, onClose, id }: StudentProfileViewPr
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle>Thông tin học sinh</DialogTitle>
+          <DialogTitle>Student information</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center gap-4">
@@ -68,15 +68,15 @@ export function StudentProfileView({ isOpen, onClose, id }: StudentProfileViewPr
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Ngày sinh</p>
+              <p className="text-sm text-muted-foreground">Date of birth</p>
               <p className="text-base">{formatDate(student.birthDate)}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Giới tính</p>
-              <p className="text-base">{student.gender === "1" ? "Nam" : "Nữ"}</p>
+              <p className="text-sm text-muted-foreground">Gender</p>
+              <p className="text-base">{student.gender === "1" ? "Male" : "Female"}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Ngày nhập học</p>
+              <p className="text-sm text-muted-foreground">Start date</p>
               <p className="text-base">{formatDate(student.startDate)}</p>
             </div>
             <div>
@@ -88,7 +88,7 @@ export function StudentProfileView({ isOpen, onClose, id }: StudentProfileViewPr
               <p className="text-base">{student.User.email}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Địa chỉ</p>
+              <p className="text-sm text-muted-foreground">Address</p>
               <p className="text-base">{student.address}</p>
             </div>
           </div>
