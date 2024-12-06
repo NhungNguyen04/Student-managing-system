@@ -1,61 +1,64 @@
-'use client'
-
-import { useState, useEffect } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { gradeApi } from "@/apis"
+import { useEffect, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { gradeApi } from "@/apis"; // Ensure this path is correct or update it
 
 interface DropdownProps {
-  selectYear: string
-  setSelectYear: (year: string) => void
-  type?: string | null
+  selectYear: number | null;
+  setSelectYear: (year: number | null) => void;
+  type: string | null;
+}
+
+interface Grade {
+  year: string; // Adjust this if the year is a number in your API response
 }
 
 export function Dropdown({ selectYear, setSelectYear, type }: DropdownProps) {
-  const [data, setData] = useState<any[]>([])
-  const [yearArr, setYearArr] = useState<string[]>([])
+  const [data, setData] = useState<Grade[]>([]);
+  const [yearArr, setYearArr] = useState<number[]>([]);
 
+  // Fetch all years
   const fetchAllYear = async () => {
     try {
-      const year = await gradeApi.getAllYear()
-      setData(year.DT)
+      const response = await gradeApi.getAllYear();
+      const grades = response.DT || [];
+      setData(grades);
+
+        const years = grades.map((grade: Grade) => Number(grade.year));
+        const uniqueYears: number[] = Array.from(new Set<number>(years));
+        setYearArr(type === null ? uniqueYears : [0, ...uniqueYears]); // Add 0 for "All" if type is not null
     } catch (error) {
-      console.error("Error fetching years:", error)
+      console.error("Error fetching years:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchAllYear()
-  }, [])
-
-  useEffect(() => {
-    if (data.length > 0) {
-      const arr = data.map((grade) => grade.year.toString())
-      const reductArr = type !== null ? ["All", ...new Set(arr)] : [...new Set(arr)]
-      setYearArr(reductArr)
-      
-      // Set default year to the latest year
-      const latestYear = arr.sort((a, b) => parseInt(b) - parseInt(a))[0]
-      if (!selectYear) {
-        setSelectYear(latestYear)
-      }
-    }
-  }, [data, type, selectYear, setSelectYear])
+    fetchAllYear();
+  }, []);
 
   return (
-    <div className="w-[180px]">
-      <Select value={selectYear} onValueChange={setSelectYear}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select year" />
+    <div className="w-fit">
+      <Select
+        value={selectYear?.toString() || ""}
+        onValueChange={(value) => setSelectYear(value === "0" ? null : Number(value))} // "0" means "All"
+      >
+        <SelectTrigger className="w-[10vw] bg-white mr-3">
+          <SelectValue placeholder="Select Year" />
         </SelectTrigger>
         <SelectContent>
-          {yearArr.map((year) => (
-            <SelectItem key={year} value={year}>
+          {type !== null && <SelectItem value="0">All</SelectItem>}
+          {yearArr.map((year, index) => (
+            <SelectItem key={index} value={year.toString()}>
               {year}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
     </div>
-  )
+  );
 }
-
