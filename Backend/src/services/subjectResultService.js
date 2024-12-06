@@ -282,9 +282,9 @@ const importScoreByExcel = async (data) => {
       }
       let evarage = totalScore / allCoefficient;
       if (evarage >= finalResult) {
-        conclude = "Đạt";
+        conclude = "Pass";
       } else {
-        conclude = "Không đạt";
+        conclude = "Fail";
       }
       await db.subjectresults.update(
         {

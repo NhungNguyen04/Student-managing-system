@@ -62,8 +62,7 @@ web_modules/
 .rts2_cache_cjs/
 .rts2_cache_es/
 .rts2_cache_umd/
-# config folder
-src/config/
+
 # Optional REPL history
 .node_repl_history
 
@@ -73,12 +72,7 @@ src/config/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+src/config/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

@@ -116,8 +116,3 @@ export default function StudentDashboard() {
             </div>
           </div>
          </div>
-
-         
-      </div>
-    )
-  }
