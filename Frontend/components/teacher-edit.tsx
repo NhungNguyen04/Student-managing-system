@@ -55,7 +55,7 @@ export function TeacherEdit({
 
   function setValues(teacherData: any) {
     setName(teacherData.teachername)
-    setGender(teacherData.gender === "1" ? "Nam" : "Nữ")
+    setGender(teacherData.gender === "1" ? "Male" : "Female")
     setBirthDate(new Date(teacherData.birthDate))
     setEmail(teacherData.User.email)
     setPreview(teacherData.User.image)
@@ -82,21 +82,21 @@ export function TeacherEdit({
 
     formData.append("teachername", name)
     formData.append("birthDate", birthDate?.toISOString() || "")
-    formData.append("gender", gender === "Nam" ? "1" : "2")
+    formData.append("gender", gender === "Male" ? "1" : "2")
     formData.append("email", email)
 
     try {
       const res = await teacherApi.updateTeacher(id, formData)
       if (res.EC === 0) {
-        alert("Chỉnh sửa thông tin thành công");
+        alert("Information updated successfully!!");
         setCheckReLoading(!checkReLoading)
         closeTeacherEdit()
       } else {
-        alert("Không thể chỉnh sửa thông tin");
+        alert("Can't update information!");
       }
     } catch (error) {
       console.error("Failed to update teacher:", error)
-      alert("Không thể chỉnh sửa thông tin");
+      alert("Can't update information!");
     }
   }
 
@@ -104,7 +104,7 @@ export function TeacherEdit({
     <Dialog open={isOpenTeacherEdit} onOpenChange={closeTeacherEdit}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Chỉnh sửa thông tin giáo viên</DialogTitle>
+          <DialogTitle>Edit teacher information</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center">
@@ -130,7 +130,7 @@ export function TeacherEdit({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Họ tên
+              Name
             </Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
           </div>
@@ -142,21 +142,21 @@ export function TeacherEdit({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="gender" className="text-right">
-              Giới tính
+              Gender
             </Label>
             <Select value={gender} onValueChange={setGender}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Nam">Nam</SelectItem>
-                <SelectItem value="Nữ">Nữ</SelectItem>
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="birthDate" className="text-right">
-              Ngày sinh
+              Date of birth
             </Label>
             <Input
               id="birthDate"
@@ -169,7 +169,7 @@ export function TeacherEdit({
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleSaveClick}>
-            Lưu
+            Save
           </Button>
         </DialogFooter>
       </DialogContent>

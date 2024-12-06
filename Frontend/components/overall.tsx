@@ -29,19 +29,19 @@ export function Overall({ listSubjectResult }: OverallProps) {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: "id",
-      header: "STT",
+      header: "No.",
       cell: ({ row }) => <span>{row.index + 1}</span>,
     },
     {
       accessorKey: "subjectname",
-      header: "Môn học",
+      header: "Subject",
     },
     {
-      header: "Điểm trung bình các môn",
+      header: "Average scores",
       columns: [
-        { accessorKey: "term1AverageScore", header: "HKI" },
-        { accessorKey: "term2AverageScore", header: "HKII" },
-        { accessorKey: "annualAverageScore", header: "CN" },
+        { accessorKey: "term1AverageScore", header: "Term I" },
+        { accessorKey: "term2AverageScore", header: "Term II" },
+        { accessorKey: "annualAverageScore", header: "All year" },
       ],
     },
   ]
@@ -60,7 +60,7 @@ export function Overall({ listSubjectResult }: OverallProps) {
   return (
     <div className="relative mb-10 mt-10 flex flex-col overflow-hidden bg-white p-0">
       <div className="mt-10 flex items-center">
-        <p className="animate-fade-up text-2xl font-semibold animate-delay-[500ms]">Học bạ cả năm</p>
+        <p className="animate-fade-up text-2xl font-semibold animate-delay-[500ms]">All year results</p>
       </div>
       <div className="mt-3 overflow-auto">
         <Table>

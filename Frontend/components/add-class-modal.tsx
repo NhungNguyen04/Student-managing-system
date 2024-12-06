@@ -89,7 +89,7 @@ export function AddClassModal({
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="classname" className="text-right">
-                Tên lớp
+                Class name
               </Label>
               <Input
                 id="classname"
@@ -99,18 +99,18 @@ export function AddClassModal({
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Năm</Label>
+              <Label className="text-right">Year</Label>
               <Input value={year} disabled className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Khối</Label>
+              <Label className="text-right">Grade</Label>
               <Input value={gradename} disabled className="col-span-3" />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Thêm</Button>
+            <Button type="submit">Create</Button>
             <Button type="button" variant="outline" onClick={closeAddClassModal}>
-              Hủy
+              Cancel
             </Button>
           </DialogFooter>
         </form>

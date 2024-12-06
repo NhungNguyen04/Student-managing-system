@@ -48,7 +48,7 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
       setStudent(res.DT)
       setName(res.DT.studentname || "")
       setBirthDate(res.DT.birthDate ? new Date(res.DT.birthDate) : undefined)
-      setGender(res.DT.gender === "1" ? "Nam" : "Nữ")
+      setGender(res.DT.gender === "1" ? "Male" : "Female")
       setAddress(res.DT.address || "")
       setPreview(res.DT.User?.image || null)
     } catch (error) {
@@ -72,13 +72,13 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
 
     formData.append("studentname", name)
     formData.append("birthDate", birthDate?.toISOString() || "")
-    formData.append("gender", gender === "Nam" ? "1" : "2")
+    formData.append("gender", gender === "Male" ? "1" : "2")
     formData.append("address", address)
 
     try {
       const res = await studentApi.updateStudent(id, formData)
       if (res.EC === 0) {
-        alert("Chỉnh sửa thông tin thành công");
+        alert("Information updated successfully!!");
         setCheckReloading(!checkReloading)
         onClose()
       } else {
@@ -86,7 +86,7 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
       }
     } catch (error) {
       console.error("Error updating student:", error)
-      alert("Không thể chỉnh sửa thông tin");
+      alert("Can't update information!");
     }
   }
 
@@ -94,7 +94,7 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Chỉnh sửa thông tin học sinh</DialogTitle>
+          <DialogTitle>Edit student information</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex flex-col items-center gap-4">
@@ -112,13 +112,13 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Họ tên
+              Name
             </Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="birthDate" className="text-right">
-              Ngày sinh
+            Date of birth
             </Label>
             <Input
               id="birthDate"
@@ -130,28 +130,28 @@ export function EditStudent({ isOpen, onClose, id, checkReloading, setCheckReloa
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="gender" className="text-right">
-              Giới tính
+              Gender
             </Label>
             <Select value={gender} onValueChange={setGender}>
               <SelectTrigger className="w-[280px]">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Nam">Nam</SelectItem>
-                <SelectItem value="Nữ">Nữ</SelectItem>
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="address" className="text-right">
-              Địa chỉ
+              Address
             </Label>
             <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} className="col-span-3" />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSaveClick}>Lưu</Button>
-          <Button type="button" variant="outline" onClick={onClose}>Hủy</Button>
+          <Button type="submit" onClick={handleSaveClick}>Save</Button>
+          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

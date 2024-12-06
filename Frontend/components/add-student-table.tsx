@@ -77,7 +77,7 @@ export function AddStudentTable({ data, handleSetCheckValue }: AddStudentTablePr
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-              Họ và Tên
+              Name
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           )
@@ -100,9 +100,9 @@ export function AddStudentTable({ data, handleSetCheckValue }: AddStudentTablePr
       },
       {
         accessorKey: "gender",
-        header: "Giới tính",
+        header: "Gender",
         cell: ({ row }) => (
-          <div>{row.original.gender === "1" ? "Nam" : "Nữ"}</div>
+          <div>{row.original.gender === "1" ? "Male" : "Female"}</div>
         ),
       },
       {

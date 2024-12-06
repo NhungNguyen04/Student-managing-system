@@ -17,6 +17,7 @@ import {
 import { ArrowLeft } from 'lucide-react'
 import { SummariesStudent } from "./summaries-student"
 import { Overall } from "./overall"
+import httpClient from "@/lib/httpClient"
 
 const grades = [
   { id: 1, name: "10" },
@@ -41,7 +42,7 @@ export function StudentSummariesTable({ id }: { id: string }) {
 
   const fetchAllOverallByGrade = async () => {
     try {
-      const res = await fetch(`/api/summaries/${id}?grade=${grade}`)
+      const res = await httpClient.get(`/summaries/${id}?grade=${grade}`)
       const data = await res.json()
       if (data.error) {
         toast.error(data.error)
@@ -55,7 +56,7 @@ export function StudentSummariesTable({ id }: { id: string }) {
 
   const fetchAllSummariesByTerm = async (term: number) => {
     try {
-      const res = await fetch(`/api/summaries/${id}?grade=${grade}&term=${term}`)
+      const res = await httpClient.get(`/summaries/${id}?grade=${grade}&term=${term}`)
       const data = await res.json()
       if (data.error) {
         toast.error(data.error)
@@ -124,15 +125,15 @@ export function StudentSummariesTable({ id }: { id: string }) {
               <div className="mt-3 grid grid-cols-2 gap-4">
                 <div className="rounded-lg border p-2">
                   <p><strong>Email:</strong> {dataTerm1[0].student.User.email}</p>
-                  <p><strong>Lớp:</strong> {dataTerm1[0].class.classname}</p>
-                  <p><strong>Khối:</strong> {grade}</p>
-                  <p><strong>Năm:</strong> {dataTerm1[0].class.grade.year}</p>
+                  <p><strong>Class:</strong> {dataTerm1[0].class.classname}</p>
+                  <p><strong>Grade:</strong> {grade}</p>
+                  <p><strong>Year:</strong> {dataTerm1[0].class.grade.year}</p>
                 </div>
                 <div className="rounded-lg border p-2">
-                  <p><strong>Địa chỉ:</strong> {dataTerm1[0].student.address}</p>
-                  <p><strong>Giới tính:</strong> {dataTerm1[0].student.gender === 1 ? "Nam" : "Nữ"}</p>
-                  <p><strong>Ngày sinh:</strong> {birthDay}</p>
-                  <p><strong>Ngày nhập học:</strong> {startDay}</p>
+                  <p><strong>Address:</strong> {dataTerm1[0].student.address}</p>
+                  <p><strong>Gender:</strong> {dataTerm1[0].student.gender === 1 ? "Male" : "Female"}</p>
+                  <p><strong>Date of birth:</strong> {birthDay}</p>
+                  <p><strong>Start date:</strong> {startDay}</p>
                 </div>
               </div>
             </div>
@@ -142,9 +143,9 @@ export function StudentSummariesTable({ id }: { id: string }) {
 
       <Tabs defaultValue="term1" className="mt-10">
         <TabsList>
-          <TabsTrigger value="term1">HKI</TabsTrigger>
-          <TabsTrigger value="term2">HKII</TabsTrigger>
-          <TabsTrigger value="overall">Cả năm</TabsTrigger>
+          <TabsTrigger value="term1">Term I</TabsTrigger>
+          <TabsTrigger value="term2">Term II</TabsTrigger>
+          <TabsTrigger value="overall">All year</TabsTrigger>
         </TabsList>
         <TabsContent value="term1">
           {dataTerm1 && dataTerm1.map((item, index) => (
