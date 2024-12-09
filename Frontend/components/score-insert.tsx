@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { toast } from "react-toastify"
 import httpClient from "@/lib/httpClient"
 import { ScoreView } from './score-view'
+import { summaryApi } from '@/apis'
 
 interface ScoreInsertProps {
   isOpen: boolean
@@ -28,6 +29,13 @@ export function ScoreInsert({ isOpen, onClose, id, subjectId, classId, subjectna
   const [fortyFive2, setFortyFive2] = useState('0')
   const [finalExam, setFinalExam] = useState('0')
   const [isScoreViewOpen, setIsScoreViewOpen] = useState(false)
+
+  
+
+  useEffect(() => {
+    if (isOpen) {
+    }
+  }, [isOpen, id, subjectId, classId])
 
   const handleSave = async () => {
     const data = {

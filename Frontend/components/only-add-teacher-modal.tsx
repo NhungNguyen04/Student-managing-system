@@ -127,6 +127,13 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
             />
           </div>
           <div className="space-y-2">
+            <Label htmlFor="subject">Subject</Label>
+            <SubjectComboBox
+              setSubjectId={setSubjectId}
+              subjectId={subjectId}
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="gender">Gender</Label>
             <Select value={gender} onValueChange={setGender}>
               <SelectTrigger>
@@ -146,13 +153,6 @@ export function OnlyAddTeacherModal({ isOpen, onClose, setCheckReLoading }: Only
               value={birthDate ? format(birthDate, "yyyy-MM-dd") : ""}
               onChange={(e) => setBirthDate(e.target.value ? new Date(e.target.value) : undefined)}
               className="w-full"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="subject">Subject</Label>
-            <SubjectComboBox
-              setSubjectId={setSubjectId}
-              subjectId={subjectId}
             />
           </div>
           <div className="flex justify-end space-x-2">

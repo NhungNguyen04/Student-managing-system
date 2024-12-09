@@ -6,8 +6,6 @@ import gradeApi from "@/apis/grade";
 import BarchartCompareGpaStudent from "@/components/compare-gpa-student-chart";
 import { BarchartCompareGpaClass } from "@/components/compare-gpa-class-chart";
 import { Dropdown } from "@/components/dropdown";
-
-import { Bar } from "recharts";
 import {
   Select,
   SelectContent,
@@ -49,12 +47,14 @@ export default function StudentDashboard() {
   }
   const fetchECompare3Year = async () => {
     let getData = await dashboardApi.getGpaOfOneStudent(studentId)
+    console.log("compare 3 year", getData);
     if (getData.EC != 1) {
       setCompare3Year(getData.DT)
     }
   }
   const fetchCompareGpaOfClass = async () => {
     let getData = await dashboardApi.getCompareGpaOfClass(studentId, term, selectYear)
+    console.log("compare gpa of class", getData);
     if (getData.EC != 1) {
       setCompareClass(getData.DT)
     }
@@ -116,3 +116,6 @@ export default function StudentDashboard() {
             </div>
           </div>
          </div>
+      </div>
+    )
+  }

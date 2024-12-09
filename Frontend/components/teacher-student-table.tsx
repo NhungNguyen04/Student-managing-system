@@ -45,7 +45,6 @@ interface StudentTableProps {
 
 export function TeacherStudentTable({ data, gradename, subjectname, subjectId, classId }: StudentTableProps) {
   const [columnFilters, setColumnFilters] = useState<{ id: string; value: any }[]>([])
-  const [dataExport, setDataExport] = useState<any[]>([])
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null)
   const [isOpenStudentProfileView, setOpenStudentProfileView] = useState(false)
   const [isOpenScoreView, setOpenScoreView] = useState(false)
@@ -70,43 +69,42 @@ export function TeacherStudentTable({ data, gradename, subjectname, subjectId, c
     }
   }
 
-  const getUsersExport = (event: any, done: () => void) => {
-    let result = [
-      [
-        "studentId",
-        "Student Name",
-        "subjectId",
-        "subjectname",
-        "classId",
-        "fifteen_1",
-        "fifteen_2",
-        "fifteen_3",
-        "fifteen_4",
-        "fourtyFive_1",
-        "fourtyFive_2",
-        "finalExam",
-        "teacherComment",
-      ],
+  const getExportData = () => {
+    const headers = [
+      "studentId",
+      "Student Name",
+      "subjectId",
+      "subjectname",
+      "classId",
+      "fifteen_1",
+      "fifteen_2",
+      "fifteen_3",
+      "fifteen_4",
+      "fourtyFive_1",
+      "fourtyFive_2",
+      "finalExam",
+      "teacherComment",
     ]
-    data.forEach((item) => {
-      result.push([
-        item.studentId,
-        item.student.studentname,
-        subjectId,
-        subjectname,
-        classId,
-        "", "", "", "", "", "", "", ""
-      ])
-    })
-    setDataExport(result)
-    done()
+
+    const csvData = data.map((item) => [
+      item.studentId,
+      item.student.studentname,
+      subjectId,
+      subjectname,
+      classId,
+      "", "", "", "", "", "", "", ""
+    ])
+
+    return [headers, ...csvData]
   }
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    if (file.type !== "text/csv") {
+    // Check file extension instead of type
+    const fileExtension = file.name.split('.').pop()?.toLowerCase()
+    if (fileExtension !== 'csv') {
       toast.error("Only CSV files are accepted!")
       return
     }
@@ -114,7 +112,7 @@ export function TeacherStudentTable({ data, gradename, subjectname, subjectId, c
     const reader = new FileReader()
     reader.onload = (e) => {
       const content = e.target?.result as string
-      const rows = content.split('\n').map(row => row.split(','))
+      const rows = content.split('\n').map(row => row.split(',').map(cell => cell.trim()))
       
       if (rows.length < 2) {
         toast.error("No data found in the file!")
@@ -122,21 +120,13 @@ export function TeacherStudentTable({ data, gradename, subjectname, subjectId, c
       }
 
       const headers = rows[0]
-      if (
-        headers[0] !== "studentId" ||
-        headers[1] !== "Student Name" ||
-        headers[2] !== "subjectId" ||
-        headers[3] !== "subjectname" ||
-        headers[4] !== "classId" ||
-        headers[5] !== "fifteen_1" ||
-        headers[6] !== "fifteen_2" ||
-        headers[7] !== "fifteen_3" ||
-        headers[8] !== "fifteen_4" ||
-        headers[9] !== "fourtyFive_1" ||
-        headers[10] !== "fourtyFive_2" ||
-        headers[11] !== "finalExam" ||
-        headers[12] !== "teacherComment"
-      ) {
+      const expectedHeaders = [
+        "studentId", "Student Name", "subjectId", "subjectname", "classId",
+        "fifteen_1", "fifteen_2", "fifteen_3", "fifteen_4",
+        "fourtyFive_1", "fourtyFive_2", "finalExam", "teacherComment"
+      ]
+
+      if (!expectedHeaders.every((header, index) => header === headers[index])) {
         toast.error("Wrong file format!")
         return
       }
@@ -244,11 +234,9 @@ export function TeacherStudentTable({ data, gradename, subjectname, subjectId, c
         />
         <div className="space-x-2">
           <CSVLink
+            data={getExportData()}
+            filename={`${subjectname}_${gradename}_scores.csv`}
             className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-            filename={"students.csv"}
-            data={dataExport}
-            asyncOnClick={true}
-            onClick={getUsersExport}
           >
             <FileSpreadsheet className="mr-2" />
             Export

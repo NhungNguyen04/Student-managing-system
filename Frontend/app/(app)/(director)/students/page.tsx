@@ -36,6 +36,7 @@ import { StudentProfileView } from '@/components/student-profile-view'
 import { EditStudent } from '@/components/edit-student-modal'
 import { DeleteStudent } from '@/components/delete-student-modal'
 import { ExcelUploadModal } from '@/components/excel-upload-modal'
+import { Dropdown } from "@/components/dropdown"
 
 export default function StudentManagement() {
   const router = useRouter()
@@ -48,7 +49,7 @@ export default function StudentManagement() {
   const [isOpenProfileView, setIsOpenProfileView] = useState(false)
   const [isOpenEditStudent, setIsOpenEditStudent] = useState(false)
   const [isOpenDeleteStudent, setIsOpenDeleteStudent] = useState(false)
-  const [selectYear, setSelectYear] = useState<number>()
+  const [selectYear, setSelectYear] = useState<number | null>(null)
   const [columnFilters, setColumnFilters] = useState<any[]>([])
   const [isOpenExcelUpload, setIsOpenExcelUpload] = useState(false)
 
@@ -214,14 +215,14 @@ export default function StudentManagement() {
           {[10, 11, 12].map((grade) => (
             <Button
               key={grade}
-              variant={columnFilters.some(f => f.id === 'gradename' && f.value.includes(grade)) ? "default" : "outline"}
+              variant={columnFilters.some(f => f.id === 'gradename' && f.value?.includes(grade)) ? "default" : "outline"}
               onClick={() => {
                 setColumnFilters((prev) => {
                   const gradeFilter = prev.find((f) => f.id === 'gradename')
                   if (!gradeFilter) {
                     return [...prev, { id: 'gradename', value: [grade] }]
                   }
-                  const newValue = gradeFilter.value.includes(grade)
+                  const newValue = gradeFilter.value?.includes(grade)
                     ? gradeFilter.value.filter((v: number) => v !== grade)
                     : [...gradeFilter.value, grade]
                   return prev.map((f) => f.id === 'gradename' ? { ...f, value: newValue } : f)
@@ -255,15 +256,7 @@ export default function StudentManagement() {
           </Card>
         </div>
         <div className="flex items-center space-x-4">
-          <Select value={selectYear?.toString()} onValueChange={(value) => setSelectYear(Number(value))}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Year" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All Years</SelectItem>
-              {/* Add other year options dynamically */}
-            </SelectContent>
-          </Select>
+        <Dropdown selectYear={selectYear} setSelectYear={setSelectYear} type="filterAll"/>
           <Button onClick={() => setIsOpenExcelUpload(true)}>
             <Upload className="mr-2 h-4 w-4" />
             Upload Excel

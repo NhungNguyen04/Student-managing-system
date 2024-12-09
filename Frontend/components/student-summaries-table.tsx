@@ -17,7 +17,7 @@ import {
 import { ArrowLeft } from 'lucide-react'
 import { SummariesStudent } from "./summaries-student"
 import { Overall } from "./overall"
-import httpClient from "@/lib/httpClient"
+import { summaryApi } from "@/apis"
 
 const grades = [
   { id: 1, name: "10" },
@@ -42,8 +42,9 @@ export function StudentSummariesTable({ id }: { id: string }) {
 
   const fetchAllOverallByGrade = async () => {
     try {
-      const res = await httpClient.get(`/summaries/${id}?grade=${grade}`)
-      const data = await res.json()
+      const res = await summaryApi.getSummariesById(id, grade);
+      console.log("overall", res);
+      const data = await res.DT;
       if (data.error) {
         toast.error(data.error)
       } else {
@@ -56,8 +57,8 @@ export function StudentSummariesTable({ id }: { id: string }) {
 
   const fetchAllSummariesByTerm = async (term: number) => {
     try {
-      const res = await httpClient.get(`/summaries/${id}?grade=${grade}&term=${term}`)
-      const data = await res.json()
+      const res = await summaryApi.getSummariesByIdAndGrade(id, grade, term);
+      const data = await res.DT
       if (data.error) {
         toast.error(data.error)
       } else {
@@ -70,6 +71,7 @@ export function StudentSummariesTable({ id }: { id: string }) {
         }
       }
     } catch (error) {
+      console.log(error);
       toast.error("An error occurred while fetching data")
     }
   }
@@ -92,7 +94,7 @@ export function StudentSummariesTable({ id }: { id: string }) {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-2xl font-bold">Điểm số</h2>
+          <h2 className="text-2xl font-bold">Scores</h2>
         </div>
         <Select value={grade} onValueChange={setGrade}>
           <SelectTrigger className="w-[180px]">

@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Clipboard, UserPlus } from 'lucide-react'
+import { Clipboard, UserPlus, Download } from 'lucide-react'
+import * as XLSX from 'xlsx'
 import { classApi } from "@/apis"
 import { AddStudentModal } from './add-student-modal'
 import { StudentTable } from './student-table'
@@ -53,22 +54,47 @@ export function DialogView({ isOpen, closeModal, nameclass, classId, openModal, 
     router.push(`/list-summaries/${classId}`)
   }
 
+  const handleExportClick = () => {
+    const formattedData = data.map(student => ({
+      id: student.id,
+      studentId: student.student.id,
+      studentName: student.student.studentname,
+      birthDate: student.student.birthDate,
+      gender: student.student.gender === "1" ? "Male" : "Female",
+      email: student.student.User.email,
+      address: student.student.address,
+      className: student.class.classname,
+      concludeCore: student.concludecore,
+      concludeTitle: student.concludetitle,
+      concludeBehaviorPoint: student.concludebehaviorpoint,
+      createdAt: student.createdAt,
+    }))
+    const worksheet = XLSX.utils.json_to_sheet(formattedData)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Students")
+    XLSX.writeFile(workbook, `class_${classId}_students.xlsx`)
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Lớp: {nameclass} (ClassId: {classId})</DialogTitle>
+          <DialogTitle>Class: {nameclass} (ClassId: {classId})</DialogTitle>
         </DialogHeader>
         <div className="flex justify-between items-center mb-4">
           {role === "admin" && (
             <>
               <Button onClick={handleSummariesClick} className="mr-2">
                 <Clipboard className="mr-2 h-4 w-4" />
-                Bảng điểm
+                Scores
               </Button>
-              <Button onClick={openAddStudentModal}>
+              <Button onClick={openAddStudentModal} className="mr-2">
                 <UserPlus className="mr-2 h-4 w-4" />
-                Thêm học sinh
+                Add student
+              </Button>
+              <Button onClick={handleExportClick}>
+                <Download className="mr-2 h-4 w-4" />
+                Export as Excel
               </Button>
             </>
           )}
@@ -82,7 +108,7 @@ export function DialogView({ isOpen, closeModal, nameclass, classId, openModal, 
           />
         </ScrollArea>
         <DialogFooter>
-          <Button onClick={closeModal}>Đóng</Button>
+          <Button onClick={closeModal}>Close</Button>
         </DialogFooter>
       </DialogContent>
       {isOpenAddStudent && (
