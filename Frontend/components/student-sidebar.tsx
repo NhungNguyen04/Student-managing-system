@@ -24,11 +24,6 @@ const items = [
     url: "class",
     icon: Calendar,
   },
-  {
-    title: "Tuition",
-    url: "tuition",
-    icon: Search,
-  },
 ]
 
 export function StudentSidebar() {

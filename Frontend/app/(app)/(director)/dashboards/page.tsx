@@ -1,26 +1,89 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { dashboardApi, gradeApi } from "@/apis"
+import BarchartAdmin from "@/components/barchart-admin"
+import AreaProgressChart from "@/components/area-progress-chart"
+import RankingStudentTable from "@/components/ranking-student-table"
+import DashboardCard from "@/components/dashboard-card"
+import {Dropdown} from "@/components/dropdown"
+
+interface Compare3YearData {
+  Year: string;
+  NumberHSG: number;
+  NumberHSK: number;
+  NumberHSTB: number;
+  NumberHSY: number;
+}
+
+interface NumberByTitle {
+  title: string;
+  count: number;
+  concludetitle: string;
+  NumberHS: number;
+}
 
 export default function Dashboard() {
-  const [data, setData] = useState<any>([])
-  const [compare3year, setCompare3Year] = useState<any>([])
-  const [selectYear, setSelectYear] = useState<number | "">("")
-  const [numberByTitle, setNumberByTitle] = useState<any>([])
-  const [excellentStudents, setExcellentStudents] = useState<any>([])
-  const [years, setYears] = useState<number[]>([])
+  const [data, setData] = useState<Student[]>([])
+  const [compare3year, setCompare3Year] = useState<Compare3YearData[]>([])
+  const [selectYear, setSelectYear] = useState<number | null>(null)
+  const [numberByTitle, setNumberByTitle] = useState<NumberByTitle[]>([])
+  const [excellentStudents, setExcellentStudents] = useState([])
+
+  interface Year {
+    year: number;
+  }
+
+  function maxGradeYear(year: Year[]): number {
+    let maxYear = year[0].year;
+    for (let i = 0; i < year.length; i++) {
+      if (year[i].year > maxYear) maxYear = year[i].year;
+    }
+    return maxYear;
+  }
+
+  const fetchExcellentStudent = async () => {
+    let getData = await dashboardApi.getExcellentStudent(selectYear)
+    if (getData.EC != 1) {
+      setExcellentStudents(getData.DT)
+    }
+  }
+
+  const fetchTop10Students = async () => {
+    let getData = await dashboardApi.getTop10Students(selectYear)
+    if (getData.EC != 1) {
+      setData(getData.DT)
+    }
+  }
+
+  const fetchNumberOfStudentByTitle = async () => {
+    let getData = await dashboardApi.getNumberOfStudentsWithType(selectYear)
+    if (getData.EC != 1 && Array.isArray(getData.DT)) {
+      setNumberByTitle(getData.DT)
+    }
+  }
+
+  const fetchECompare3Year = async () => {
+    let getData = await dashboardApi.getCompare3year(selectYear)
+    if (getData.EC != 1) {
+      setCompare3Year(getData.DT)
+    }
+  }
+
+  const fetchAllYear = async () => {
+    let year = await gradeApi.getAllYear()
+    if (year.DT) {
+      let maxYear = maxGradeYear(year.DT)
+      setSelectYear(maxYear)
+    }
+  }
 
   useEffect(() => {
     fetchAllYear()
   }, [])
 
   useEffect(() => {
-    if (selectYear !== "") {
+    if (selectYear !== null) {
       fetchExcellentStudent()
       fetchECompare3Year()
       fetchTop10Students()
@@ -28,135 +91,51 @@ export default function Dashboard() {
     }
   }, [selectYear])
 
-  const fetchAllYear = async () => {
-    let year = await gradeApi.getAllYear()
-    if (year.DT) {
-      const allYears = year.DT.map((y: { year: number }) => y.year)
-      setYears(allYears)
-      const maxYear = Math.max(...allYears)
-      setSelectYear(maxYear)
-    }
+  interface Student {
+      id: number;
+      studentname: string;
+      email: string;
+      concludecore: number;
+      classname: string;
+      NumberHSG: number;
+      NumberHSTotal: number;
+      grade: string;
   }
 
-  const fetchExcellentStudent = async () => {
-    let getData = await dashboardApi.getExcellentStudent(selectYear)
-    if (getData.EC !== 1) {
-      setExcellentStudents(getData.DT.filter((student: any) => student !== null))
-    }
+  function DashboardCardData(data: Student[]) {
+    let Students = data
+    return Students.map((item: Student, index) => 
+    (
+      <DashboardCard
+        NumberHSG={item?.NumberHSG}
+        NumberHSTotal={item?.NumberHSTotal}
+        grade={item?.grade}
+        key={index}
+      />
+    ))
   }
 
-  const fetchTop10Students = async () => {
-    let getData = await dashboardApi.getTop10Students(selectYear)
-    if (getData.EC !== 1) {
-      setData(getData.DT.filter((student: any) => student !== null))
-    }
-  }
-
-  const fetchNumberOfStudentByTitle = async () => {
-    let getData = await dashboardApi.getNumberOfStudentsWithType(selectYear)
-    if (getData.EC !== 1) {
-      setNumberByTitle(getData.DT.filter((item: any) => item !== null))
-    }
-  }
-
-  const fetchECompare3Year = async () => {
-    let getData = await dashboardApi.getCompare3year(selectYear)
-    if (getData.EC !== 1) {
-      setCompare3Year(getData.DT.filter((item: any) => item !== null))
-    }
-  }
+  const result = DashboardCardData(excellentStudents)
+  console.log(result)
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-      
-      <div className="mb-6">
-        <Select value={selectYear.toString()} onValueChange={(value) => setSelectYear(Number(value))}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Year" />
-          </SelectTrigger>
-          <SelectContent>
-            {years.map((year) => (
-              <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className="mb-0 w-full flex h-screen flex-col overflow-y-auto p-0">
+      <div className="mt-10 flex items-center justify-between">
+        <p className="animate-fade-up text-2xl font-bold">Dashboard</p>
+        <Dropdown selectYear={selectYear} setSelectYear={setSelectYear} />
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Excellent Students</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">{excellentStudents.length}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Students by Title</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={numberByTitle}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="title" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>3 Year Comparison</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={compare3year}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="year" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="excellent" fill="#8884d8" />
-                <Bar dataKey="good" fill="#82ca9d" />
-                <Bar dataKey="average" fill="#ffc658" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      <div className="mt-5 grid w-full grid-cols-3 gap-4">{result}</div>
+      <div className="mt-5 flex w-full">
+        <div className="w-2/3">
+          <BarchartAdmin compare3year={compare3year} />
+        </div>
+        <div className="w-1/3">
+          <AreaProgressChart numberByTitle={numberByTitle} />
+        </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Top 10 Students</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Rank</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Score</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((student: any, index: number) => (
-                <TableRow key={index}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{student.name}</TableCell>
-                  <TableCell>{student.score}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div className="mt-5">
+        <RankingStudentTable data={data} />
+      </div>
     </div>
   )
 }
-

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { teacherApi, classApi, gradeApi } from "@/apis"
 
 export default function TeacherClass() {
-  const [selectYear, setSelectYear] = useState("")
+  const [selectYear, setSelectYear] = useState<number | null>(null)
   const [classValue, setClassValue] = useState<any[]>([])
   const [subject, setSubject] = useState("")
   const [grade10, setGrade10] = useState<any[]>([])
@@ -92,7 +92,7 @@ export default function TeacherClass() {
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Teacher Classes</h1>
-        <Dropdown selectYear={selectYear} setSelectYear={setSelectYear} />
+        <Dropdown selectYear={selectYear} setSelectYear={setSelectYear} type="someType" />
       </div>
 
       {[

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "@/hooks/use-toast"
 import { studentApi, summaryApi } from "@/apis"
 import { AddStudentTable } from '@/components/add-student-table'
+import * as XLSX from 'xlsx'
 
 interface AddStudentModalProps {
   isOpenAddStudent: boolean
@@ -53,6 +54,34 @@ export function AddStudentModal({ isOpenAddStudent, closeAddStudentModal, classI
     }
   }
 
+  const handleImportExcel = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const headerRow = jsonData[0] as string[];
+        const studentIdIndex = headerRow.indexOf('studentId');
+        if (studentIdIndex !== -1) {
+          const studentIds = jsonData.slice(1).map((row: any) => row[studentIdIndex]);
+          setCheckValue(studentIds);
+          handleCreateList();
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "No 'studentId' column found in the Excel file",
+          });
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
+
   const fetchAllStudentNotInClass = async () => {
     try {
       console.log('classId', classId); 
@@ -83,8 +112,18 @@ export function AddStudentModal({ isOpenAddStudent, closeAddStudentModal, classI
           <AddStudentTable handleSetCheckValue={handleSetCheckValue} data={data} />
         </div>
         <DialogFooter>
-          <Button onClick={handleCreateList}>Thêm</Button>
-          <Button variant="outline" onClick={closeAddStudentModal}>Đóng</Button>
+          <Button onClick={() => document.getElementById('excel-upload')?.click()}>
+            Import Excel
+          </Button>
+          <input
+            type="file"
+            id="excel-upload"
+            accept=".xlsx, .xls"
+            onChange={handleImportExcel}
+            style={{ display: 'none' }}
+          />
+          <Button onClick={handleCreateList}>Add</Button>
+          <Button variant="outline" onClick={closeAddStudentModal}>Close</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

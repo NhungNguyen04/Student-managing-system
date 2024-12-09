@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Edit, Info, List, Trash2 } from 'lucide-react'
+import { ArrowUpDown, Edit, Info, List, Trash2, Download } from 'lucide-react'
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -39,6 +39,7 @@ export function StudentTable({ data, role, checkReloading, setCheckReloading }: 
   const [isOpenEditStudent, setOpenEditStudent] = useState(false)
   const [isOpenDeleteStudent, setOpenDeleteStudent] = useState(false)
   const [selectedId, setSelectedId] = useState<string>('')
+  console.log(data);
 
   const handleClick = (id: string) => {
     router.push(`/student-summaries/${id}`)
@@ -48,7 +49,7 @@ export function StudentTable({ data, role, checkReloading, setCheckReloading }: 
     () => [
       {
         accessorKey: "id",
-        header: "STT",
+        header: "No.",
         cell: ({ row }: any) => <span>{row.index + 1}</span>,
       },
       {
@@ -91,7 +92,7 @@ export function StudentTable({ data, role, checkReloading, setCheckReloading }: 
         accessorKey: "student.gender",
         header: "Gender",
         cell: ({ row }: any) => (
-          <div>{row.original.student.gender === "1" ? "Nam" : "Nữ"}</div>
+          <div>{row.original.student.gender === "1" ? "Male" : "Female"}</div>
         ),
       },
       {
