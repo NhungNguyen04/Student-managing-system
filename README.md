@@ -1,6 +1,6 @@
 <div align="center">
-   <h1 align="center">
-      🎓 Student Managing System 🎓
+   <h3 align="center">
+      Student Managing System
    <h3 align="center">
       🚀 A Full-Stack Next.js & Node.js Solution 🚀
    </h3>
